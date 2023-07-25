@@ -3,24 +3,12 @@ import os
 import time
 import csv
 import mysql.connector
+import shutil
+from datetime import datetime
 
 conn=mysql.connector.connect(host="localhost", user="root", password="Calendar1989.", database="curs")
 cursor=conn.cursor(buffered=True)
-cursor.execute("SELECT * FROM USERS")
-rows=cursor.fetchall()
 
-class User():
-    def __init__(self,Nume,Prenume,Companie,IdManager):
-        self.Nume=Nume
-        self.Prenume=Prenume
-        self.Companie=Companie
-        self.IdManager=IdManager
-    def insert_user(self):
-        cursor.execute(f"INSERT INTO USERS VALUES(null,'{self.Nume}','{self.Prenume}','{self.Companie}','{self.IdManager}');")
-        conn.commit()
-
-conn.close()
-cursor.close()
 
 class Fisier():
     def __init__(self,Path):
@@ -54,19 +42,22 @@ class FisierCsv(Fisier):
         super().__init__(Path)
     
     def citeste_fisier(self):
-        self.coloane=0
-        self.randuri=0
-        self.lines=[]
+        self.text=[]
         with open(self.Path,'r') as file:
             reader=csv.reader(file)
-            for line in reader:
-                self.lines.append(line)
-        
+            next(reader)
+            for row in reader:
+                self.text.append(row)
+            return self.text    
+          
     def scrie_fisier(self,outputPath):
         with open(outputPath,"w",newline='') as file:
             writer=csv.writer(file)
             writer.writerows(self.lines)
- 
+
+
+import datetime
+
 
 def main():
     while True:
@@ -77,8 +68,41 @@ def main():
         else:
             for fisierNou in fisiere:
                 if not fisierNou in fisiereVechi:
-                    print(fisierNou)            
+                    type=fisierNou.split(".")[1]
+                    if(type=="txt"):
+                        fisiertxt=FisierTxt('proiect/Intrari/'+fisierNou)
+                        text=fisiertxt.citeste_fisier()
+                        for line in text:
+                            element=line.split(",")
+                            IdPersoana=element[0]
+                            Data=element[1]
+                            Sens=element[2]
+                            NumePoarta=fisierNou.split(".")[0]
+                            cursor.execute(f"INSERT INTO ACCESS VALUES('{IdPersoana}','{Data}','{Sens}','{NumePoarta}');")
+                            conn.commit()
+
+                    if(type=="csv"):
+                        fisiercsv=FisierCsv('proiect/Intrari/'+fisierNou)
+                        text=fisiercsv.citeste_fisier()
+                        for element in text:
+                            IdPersoana=element[0]
+                            Data=element[1]
+                            Sens=element[2]
+                            NumePoarta=fisierNou.split(".")[0]
+                            cursor.execute(f"INSERT INTO ACCESS VALUES('{IdPersoana}','{Data}','{Sens}','{NumePoarta}');")
+                            conn.commit()
+                source = 'proiect/Intrari/'+fisierNou 
+                backup = 'proiect/Backup_intrari/'  
+                data=datetime.datetime.now().date()
+                nume_fisier=f"{fisierNou}_{data}"
+                destination=os.path.join(backup,nume_fisier)
+                shutil.move(source, destination)       
         fisiereVechi = fisiere
         time.sleep(5)
+
+# main()
+     
+
+
 
 
