@@ -4,21 +4,9 @@ import smtplib, ssl
 import pytz
 import csv
 from function import send_email
-
-
-# flag=0
-# while True:
-#     currentTime=datetime.datetime.now().time()
-#     if currentTime.hour>=20:
-#         if flag==0:
-#             ore_lucrate()
-#             flag+=1
-#     else:
-#         flag=0
-#     time.sleep(5)
+import time
 
 def calculeaza_ore_lucrate():
-    # Conectarea la baza de date MySQL
     conn = mysql.connector.connect(
         host="localhost",
         user="root",
@@ -35,9 +23,9 @@ def calculeaza_ore_lucrate():
 
     for inregistrare in date_acces:
         id_angajat = inregistrare[0]
-        timestamp_str = inregistrare[1]
-        directie = inregistrare[2].strip().replace(';', '')  # Eliminam caracterele nedorite, cum ar fi '\n' și ';'
-        timestamp = datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+        data_ora = inregistrare[1]
+        directie = inregistrare[2].strip().replace(';', '')  
+        timestamp = datetime.strptime(data_ora, '%Y-%m-%dT%H:%M:%S.%fZ')
         
         if id_angajat not in angajati_detalii:
             angajati_detalii[id_angajat] = {'intrare': None, 'iesire': None}
@@ -48,7 +36,6 @@ def calculeaza_ore_lucrate():
         elif directie == 'out':
             angajati_detalii[id_angajat]['iesire'] = timestamp
 
-    # Inchidem conexiunea cu baza de date
     cursor.close()
     conn.close()
 
@@ -65,15 +52,26 @@ def calculeaza_ore_lucrate():
     return angajati_ore
 
 def main():
+    flag=0
+    while True:
+        oraCurenta=datetime.now().time()
+        ora=oraCurenta.hour
+        if ora>=20:
+            if flag==0:
     # Calculam durata totala lucrată pentru fiecare angajat
-    angajati_ore = calculeaza_ore_lucrate()
+                angajati_ore = calculeaza_ore_lucrate()
 
-    # Afisam doar angajatii cu mai putin de 8 ore lucrate
-    for id_angajat, ore_lucrate in angajati_ore.items():
-        if ore_lucrate < 8:
-            mesaj=f"Angajatul cu ID-ul {id_angajat} a lucrat astazi doar {ore_lucrate:.2f} ore."
-            send_email(mesaj)
-
+    # Afisam doar angajatii cu mai putin de 8 ore lucrate si trimitem mail
+                for id_angajat, ore_lucrate in angajati_ore.items():
+                    if ore_lucrate < 8:
+                        mesaj=f"Angajatul cu ID-ul {id_angajat} a lucrat astazi doar {ore_lucrate:.2f} ore."
+                        send_email(mesaj)
+                flag+=1
+        else:
+            flag=0
+        time.sleep(5)
+        
 if __name__ == "__main__":
     main()
+
 

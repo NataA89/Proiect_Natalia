@@ -3,7 +3,7 @@ import yagmail
 def send_email(mesaj):
     smtp_server_domain_name = "smtp.gmail.com"
     sender_mail = "natalia.angiu@gmail.com"
-    password = "lybehjchxmlsmiug"
+    password = "rueyyhbsjgpezmqi"
 
     yag = yagmail.SMTP(sender_mail, password)
 

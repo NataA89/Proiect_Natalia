@@ -15,9 +15,10 @@ def createPersoana():
     IdManager=data['IdManager']
     cursor.execute(f"INSERT INTO USERS VALUES(null,'{Nume}','{Prenume}','{Companie}','{IdManager}')")
     conn.commit()
-    conn.close()
-    cursor.close()
+    # conn.close()
+    # cursor.close()
     return "Persoana inserata "+str(cursor.lastrowid)
+    
 
 if __name__ == '__main__':
     app.run(debug=True)

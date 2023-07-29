@@ -10,50 +10,51 @@ conn=mysql.connector.connect(host="localhost", user="root", password="Calendar19
 cursor=conn.cursor(buffered=True)
 
 
-class Fisier():
-    def __init__(self,Path):
-        self.Path=Path
+class Fisier:
+    def __init__(self, Path):
+        self.Path = Path
 
     def citeste_fisier(self):
         with open(self.Path, 'r') as file:
-            text=file.readlines()
-            return text
-    
-    def scrie_fisier(self,outputPath):
+            text = file.readlines()
+        return text
+
+    def scrie_fisier(self, outputPath):
         with open(self.Path, 'r') as file:
-            text=file.readline()
+            text = file.readline()
             while text:
-                text=text.replace('\n','')
-                with open(outputPath,'a') as f:
+                text = text.replace('\n', '')
+                with open(outputPath, 'a') as f:
                     f.write(f'{text}\n')
-                text=file.readline()
+                text = file.readline()
 
 class FisierTxt(Fisier):
-    def __init__(self,Path):
+    def __init__(self, Path):
         super().__init__(Path)
 
     def citeste_fisier(self):
         return super().citeste_fisier()
+
     def scrie_fisier(self, outputPath):
         return super().scrie_fisier(outputPath)
 
 class FisierCsv(Fisier):
-    def __init__(self,Path):
+    def __init__(self, Path):
         super().__init__(Path)
-    
+
     def citeste_fisier(self):
-        self.text=[]
-        with open(self.Path,'r') as file:
-            reader=csv.reader(file)
+        self.text = []
+        with open(self.Path, 'r') as file:
+            reader = csv.reader(file)
             next(reader)
             for row in reader:
                 self.text.append(row)
-            return self.text    
-          
-    def scrie_fisier(self,outputPath):
-        with open(outputPath,"w",newline='') as file:
-            writer=csv.writer(file)
-            writer.writerows(self.lines)
+        return self.text
+
+    def scrie_fisier(self, outputPath):
+        with open(outputPath, "w", newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(self.text)
 
 
 import datetime
@@ -77,8 +78,8 @@ def main():
                             IdPersoana=element[0]
                             Data=element[1]
                             Sens=element[2]
-                            NumePoarta=fisierNou.split(".")[0]
-                            cursor.execute(f"INSERT INTO ACCESS VALUES('{IdPersoana}','{Data}','{Sens}','{NumePoarta}');")
+                            IdPoarta=fisierNou.split(".")[0][6]
+                            cursor.execute(f"INSERT INTO ACCESS VALUES('{IdPersoana}','{Data}','{Sens}','{IdPoarta}');")
                             conn.commit()
 
                     if(type=="csv"):
@@ -88,8 +89,8 @@ def main():
                             IdPersoana=element[0]
                             Data=element[1]
                             Sens=element[2]
-                            NumePoarta=fisierNou.split(".")[0]
-                            cursor.execute(f"INSERT INTO ACCESS VALUES('{IdPersoana}','{Data}','{Sens}','{NumePoarta}');")
+                            IdPoarta=fisierNou.split(".")[0][6]
+                            cursor.execute(f"INSERT INTO ACCESS VALUES('{IdPersoana}','{Data}','{Sens}','{IdPoarta}');")
                             conn.commit()
                 source = 'proiect/Intrari/'+fisierNou 
                 backup = 'proiect/Backup_intrari/'  
@@ -102,7 +103,6 @@ def main():
 
 # main()
      
-
 
 
 
