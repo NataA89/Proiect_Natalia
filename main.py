@@ -6,6 +6,7 @@ import mysql.connector
 import shutil
 from datetime import datetime
 
+
 conn=mysql.connector.connect(host="localhost", user="root", password="Calendar1989.", database="curs")
 cursor=conn.cursor(buffered=True)
 
@@ -60,7 +61,7 @@ class FisierCsv(Fisier):
 import datetime
 
 
-def main():
+def verifica_fisiere():
     while True:
         fisiereVechi = []
         fisiere = os.listdir("proiect/Intrari")
@@ -101,8 +102,6 @@ def main():
         fisiereVechi = fisiere
         time.sleep(5)
 
-# main()
-     
-
+verifica_fisiere()
 
 

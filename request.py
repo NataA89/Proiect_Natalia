@@ -13,7 +13,8 @@ def createPersoana():
     Prenume=data['Prenume']
     Companie=data['Companie']
     IdManager=data['IdManager']
-    cursor.execute(f"INSERT INTO USERS VALUES(null,'{Nume}','{Prenume}','{Companie}','{IdManager}')")
+    MailManager=data['MailManager']
+    cursor.execute(f"INSERT INTO USERS VALUES(null,'{Nume}','{Prenume}','{Companie}','{IdManager}','{MailManager}')")
     conn.commit()
     # conn.close()
     # cursor.close()
